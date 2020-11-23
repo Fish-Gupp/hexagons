@@ -1,22 +1,20 @@
 import React from 'react';
 import Hexagon, { HexagonType } from './Hexagon';
 import { createUseStyles } from 'react-jss';
-import { width } from '../settings';
+import { boardScreenPct, borderWidth, width } from '../settings';
 
 export type TowerType = HexagonType[];
 
 const useStyles = createUseStyles({
   tower: {
+    position: 'relative',
     display: 'inline-block',
-    marginRight: `${30 / width}vw`,
+    marginRight: `calc(${boardScreenPct / 3 / width}vw + ${borderWidth * 2}px)`,
   },
   even: {
-    position: 'relative',
-    top: `${45 / width}vw`,
+    top: `calc(${boardScreenPct / 2 / width}vw + ${borderWidth * 2}px)`,
   },
-  odd: {
-    color: 'red',
-  },
+  odd: {},
 });
 
 const Tower = ({
@@ -29,6 +27,7 @@ const Tower = ({
   onClick: () => void;
 }): JSX.Element => {
   const classes = useStyles();
+  const reverseTower = [...tower].reverse();
 
   return (
     <div
@@ -37,7 +36,7 @@ const Tower = ({
         index % 2 === 0 ? classes.even : classes.odd
       }`}
     >
-      {tower.map((hexagon, index) => (
+      {reverseTower.map((hexagon, index) => (
         <Hexagon key={index} hexagon={hexagon} />
       ))}
     </div>
