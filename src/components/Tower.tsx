@@ -6,15 +6,15 @@ import { boardScreenPct, borderWidth, width } from '../settings';
 export type TowerType = HexagonType[];
 
 const useStyles = createUseStyles({
-  tower: {
-    position: 'relative',
-    display: 'inline-block',
-    marginRight: `calc(${boardScreenPct / 3 / width}vw + ${borderWidth * 2}px)`,
-  },
   even: {
     top: `calc(${boardScreenPct / 2 / width}vw + ${borderWidth * 2}px)`,
   },
   odd: {},
+  tower: {
+    display: 'inline-block',
+    marginRight: `calc(${boardScreenPct / 3 / width}vw + ${borderWidth * 2}px)`,
+    position: 'relative',
+  },
 });
 
 const Tower = ({

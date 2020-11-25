@@ -96,12 +96,12 @@ function checkForWinner(board: BoardType): PlayerType | null {
 function getNewPlayers(): PlayerType[] {
   return [
     {
-      name: 'Player 1',
       color: 'red',
+      name: 'Player 1',
     },
     {
-      name: 'Player 2',
       color: 'green',
+      name: 'Player 2',
     },
   ];
 }
