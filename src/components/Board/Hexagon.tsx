@@ -1,20 +1,20 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import { borderWidth, width } from '../settings';
-import { PlayerType } from './Player';
+import { borderWidth, width } from '../../settings';
+import { PlayerType } from '../Player';
+
+export type NeighborIndex = 'n' | 'ne' | 'se' | 's' | 'sw' | 'nw';
 
 export type HexagonType = {
-  name: string;
-  player?: PlayerType;
+  towerIndex: number;
   color: string;
+  name: string;
   neighbors: {
-    n?: HexagonType;
-    ne?: HexagonType;
-    se?: HexagonType;
-    s?: HexagonType;
-    sw?: HexagonType;
-    nw?: HexagonType;
+    [k in NeighborIndex]?: HexagonType;
   };
+  player?: PlayerType;
+  hexagonIndex: number;
+  isOdd: number;
 };
 
 const sqrtThree = Math.sqrt(3);

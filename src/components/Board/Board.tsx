@@ -1,7 +1,7 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import { width } from '../settings';
-import { PlayerType } from './Player';
+import { width } from '../../settings';
+import { PlayerType } from '../Player';
 import Tower, { TowerType } from './Tower';
 
 export type BoardType = {
@@ -30,20 +30,29 @@ const useStyles = createUseStyles({
 const Board = ({
   board,
   onClick,
+  onMouseEnter,
+  onMouseLeave,
 }: {
   board: BoardType;
-  onClick: (index: number) => void;
+  onClick?: (index: number) => void;
+  onMouseEnter?: (index: number) => void;
+  onMouseLeave?: (index: number) => void;
 }): JSX.Element => {
   const classes = useStyles();
 
   return (
     <div className={classes.background}>
       <div className={classes.board}>
-        {board.winner && <h1>Winner! {board.winner.name}</h1>}
         {board.layout.map((tower, index) => (
           <Tower
+            onMouseEnter={() => {
+              onMouseEnter && onMouseEnter(index);
+            }}
+            onMouseLeave={() => {
+              onMouseLeave && onMouseLeave(index);
+            }}
             onClick={() => {
-              onClick(index);
+              onClick && onClick(index);
             }}
             key={index}
             index={index}

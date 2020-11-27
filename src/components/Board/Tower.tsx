@@ -1,7 +1,7 @@
 import React from 'react';
 import Hexagon, { HexagonType } from './Hexagon';
 import { createUseStyles } from 'react-jss';
-import { borderWidth, width } from '../settings';
+import { borderWidth, width } from '../../settings';
 
 export type TowerType = HexagonType[];
 
