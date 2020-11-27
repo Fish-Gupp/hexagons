@@ -1,5 +1,5 @@
 import React from 'react';
 
-const Header = (): JSX.Element => <div>Hexagon 4D</div>;
+const Header = (): JSX.Element => <div></div>;
 
 export default Header;

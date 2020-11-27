@@ -1,11 +1,12 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import { boardScreenPct, borderWidth, width } from '../settings';
-import { PlayerType } from '../types/Player';
+import { borderWidth, width } from '../settings';
+import { PlayerType } from './Player';
 
 export type HexagonType = {
   name: string;
   player?: PlayerType;
+  color: string;
   neighbors: {
     n?: HexagonType;
     ne?: HexagonType;
@@ -37,6 +38,7 @@ const useStyles = createUseStyles({
       borderTop: border,
       content: '""',
       height: 'inherit',
+      paddingTop: 'inherit',
       position: 'absolute',
       top: 0,
       width: 'inherit',
@@ -44,25 +46,24 @@ const useStyles = createUseStyles({
     backgroundColor: (props) => props.color,
     borderBottom: border,
     borderTop: border,
-    height: `${boardScreenPct / width}vw`,
-    width: `${boardScreenPct / width / sqrtThree}vw`,
+    paddingTop: '100%',
+    width: `${100 / sqrtThree}%`,
   },
   hexagon: {
-    marginBottom: `calc(${3 / width}vw + ${borderWidth * 2}px)`,
+    marginBottom: `${100 / width}%`,
     position: 'relative',
-    textAlign: 'left',
   },
 });
 
 const Hexagon = ({ hexagon }: { hexagon: HexagonType }): JSX.Element => {
   const classes = useStyles({
-    color: (hexagon.player && hexagon.player.color) || 'white',
+    color: (hexagon.player && hexagon.player.color) || hexagon.color,
   });
 
   return (
     <div className={classes.hexagon}>
       <div className={classes.cssHexagon}></div>
-      <div className={classes.content}>{hexagon.name}</div>
+      <div className={classes.content}></div>
     </div>
   );
 };

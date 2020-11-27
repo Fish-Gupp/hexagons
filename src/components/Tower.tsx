@@ -1,19 +1,20 @@
 import React from 'react';
 import Hexagon, { HexagonType } from './Hexagon';
 import { createUseStyles } from 'react-jss';
-import { boardScreenPct, borderWidth, width } from '../settings';
+import { borderWidth, width } from '../settings';
 
 export type TowerType = HexagonType[];
 
 const useStyles = createUseStyles({
-  even: {
-    top: `calc(${boardScreenPct / 2 / width}vw + ${borderWidth * 2}px)`,
+  even: {},
+  odd: {
+    marginBottom: `calc(${100 / 2 / width}% + ${borderWidth * 2}px)`,
   },
-  odd: {},
   tower: {
     display: 'inline-block',
-    marginRight: `calc(${boardScreenPct / 3 / width}vw + ${borderWidth * 2}px)`,
+    // marginRight: `calc(${100 / 3 / width}% + ${borderWidth * 2}px)`,
     position: 'relative',
+    width: `${100 / width}%`,
   },
 });
 
@@ -21,10 +22,14 @@ const Tower = ({
   tower,
   index,
   onClick,
+  onMouseEnter,
+  onMouseLeave,
 }: {
   tower: TowerType;
   index: number;
   onClick: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }): JSX.Element => {
   const classes = useStyles();
   const reverseTower = [...tower].reverse();
@@ -32,6 +37,8 @@ const Tower = ({
   return (
     <div
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={`${classes.tower} ${
         index % 2 === 0 ? classes.even : classes.odd
       }`}
@@ -44,3 +51,13 @@ const Tower = ({
 };
 
 export default Tower;
+
+export function getTowerHeight(tower: TowerType): number {
+  for (let index = tower.length - 1; index >= 0; index--) {
+    const hexagon = tower[index];
+    if (hexagon.player) {
+      return index + 1;
+    }
+  }
+  return 0;
+}

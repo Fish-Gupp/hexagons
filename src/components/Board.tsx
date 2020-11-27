@@ -1,154 +1,58 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { createUseStyles } from 'react-jss';
-import { height, width } from '../settings';
-import { PlayerType } from '../types/Player';
-import { HexagonType } from './Hexagon';
+import { width } from '../settings';
+import { PlayerType } from './Player';
 import Tower, { TowerType } from './Tower';
 
-type BoardType = {
-  winner?: number;
+export type BoardType = {
+  currentPlayer: PlayerType;
+  winner?: PlayerType;
   layout: TowerType[];
 };
 
+const marginLeft = `${50 / width / Math.sqrt(3)}%`;
 const useStyles = createUseStyles({
+  background: {
+    backgroundImage: 'url(background.png)',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'contain',
+    padding: '4% 6% 0% 7%',
+    paddingBottom: '12%',
+  },
   board: {
+    marginLeft: `${marginLeft}`,
+    textAlign: 'left',
     whiteSpace: 'nowrap',
+    width: `calc (100% - ${marginLeft})`,
   },
 });
 
-const Board = (): JSX.Element => {
+const Board = ({
+  board,
+  onClick,
+}: {
+  board: BoardType;
+  onClick: (index: number) => void;
+}): JSX.Element => {
   const classes = useStyles();
-  const [board, setBoard] = useState(getNewBoard());
-  const [players] = useState(getNewPlayers());
-  const [currentPlayer, setCurrentPlayer] = useState(players[0]);
-  const [winner, setWinner] = useState<PlayerType | null>(null);
 
   return (
-    <div className={classes.board}>
-      {winner && <h1>Winner! {winner.name}</h1>}
-      {board.layout.map((tower, index) => (
-        <Tower
-          onClick={() => {
-            const newBoard = dropHexagon(board, currentPlayer, index);
-            setBoard(newBoard);
-            const newWinner = checkForWinner(board);
-            setWinner(newWinner);
-            setCurrentPlayer(
-              players.indexOf(currentPlayer) === 0 ? players[1] : players[0]
-            );
-          }}
-          key={index}
-          index={index}
-          tower={tower}
-        />
-      ))}
+    <div className={classes.background}>
+      <div className={classes.board}>
+        {board.winner && <h1>Winner! {board.winner.name}</h1>}
+        {board.layout.map((tower, index) => (
+          <Tower
+            onClick={() => {
+              onClick(index);
+            }}
+            key={index}
+            index={index}
+            tower={tower}
+          />
+        ))}
+      </div>
     </div>
   );
 };
 
 export default Board;
-
-function dropHexagon(board: BoardType, player: PlayerType, towerIndex: number) {
-  const dropIndex = getDropIndex(board, towerIndex);
-  const newBoard = {
-    ...board,
-  };
-  if (dropIndex < height) {
-    newBoard.layout[towerIndex][dropIndex].player = player;
-  }
-  return newBoard;
-}
-
-function getDropIndex(board: BoardType, towerIndex: number): number {
-  const oddOffset = towerIndex % 2;
-  const tower = board.layout[towerIndex];
-  let height = getTowerHeight(tower);
-
-  if (towerIndex > 0) {
-    const leftTower = board.layout[towerIndex - 1];
-    const leftTowerHeight = getTowerHeight(leftTower) - oddOffset;
-    height = Math.max(height, leftTowerHeight);
-  }
-
-  if (towerIndex < width - 1) {
-    const rightTower = board.layout[towerIndex + 1];
-    const rightTowerHeight = getTowerHeight(rightTower) - oddOffset;
-    height = Math.max(height, rightTowerHeight);
-  }
-
-  return height;
-}
-
-function getTowerHeight(tower: TowerType): number {
-  for (let index = tower.length - 1; index >= 0; index--) {
-    const hexagon = tower[index];
-    if (hexagon.player) {
-      return index + 1;
-    }
-  }
-  return 0;
-}
-
-function checkForWinner(board: BoardType): PlayerType | null {
-  return null;
-}
-
-function getNewPlayers(): PlayerType[] {
-  return [
-    {
-      color: 'red',
-      name: 'Player 1',
-    },
-    {
-      color: 'green',
-      name: 'Player 2',
-    },
-  ];
-}
-
-function getNewBoard(): BoardType {
-  const board: BoardType = {
-    layout: [],
-  };
-
-  // creating hexagons
-  for (let bi = 0; bi < width; bi++) {
-    const tower = [];
-    for (let ti = 0; ti < height; ti++) {
-      const hexagon: HexagonType = {
-        name: `${bi}:${ti}`,
-        neighbors: {},
-      };
-      tower.push(hexagon);
-    }
-    board.layout.push(tower);
-  }
-
-  // setting refernces to neighboring hexagons
-  for (let bi = 0; bi < width; bi++) {
-    const tower = board.layout[bi];
-    for (let ti = 0; ti < height; ti++) {
-      const hexagon = tower[ti];
-      if (ti < height - 1) {
-        hexagon.neighbors.n = tower[ti + 1];
-        if (bi < width - 1) {
-          hexagon.neighbors.ne = board.layout[bi + 1][ti + 1];
-        }
-        if (bi > 0) {
-          hexagon.neighbors.nw = board.layout[bi - 1][ti + 1];
-        }
-      }
-      if (ti > 0) {
-        hexagon.neighbors.s = tower[ti - 1];
-        if (bi < width - 1) {
-          hexagon.neighbors.se = board.layout[bi + 1][ti];
-        }
-        if (bi > 0) {
-          hexagon.neighbors.sw = board.layout[bi - 1][ti];
-        }
-      }
-    }
-  }
-
-  return board;
-}
