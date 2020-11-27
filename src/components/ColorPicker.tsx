@@ -57,9 +57,6 @@ const ColorPicker = ({
       <OutsideClickHandler
         onOutsideClick={() => {
           setOpen(false);
-          if (color !== newColor) {
-            onChange(newColor);
-          }
         }}
       >
         <div

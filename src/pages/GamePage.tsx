@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Board, { BoardType } from '../components/Board/Board';
 import Layout from '../layouts/Layout';
 import { Card, Col, Row } from 'antd';
@@ -7,6 +7,8 @@ import { height, width } from '../settings';
 import { getTowerHeight } from '../components/Board/Tower';
 import { HexagonType, NeighborIndex } from '../components/Board/Hexagon';
 import { createUseStyles } from 'react-jss';
+import { useRoute } from 'wouter';
+import ShareUrl from '../components/ShareUrl';
 
 const useStyles = createUseStyles({
   winner: {
@@ -27,21 +29,31 @@ function GamePage(): JSX.Element {
     id: 1,
     name: 'Player 1',
   };
-  const player2: PlayerType = {
-    color: 'green',
-    editable: false,
-    id: 2,
-    name: 'Player 2',
-  };
+  const player2: PlayerType | null = null;
   const [currentPlayer, setCurrentPlayer] = useState(player1);
   const [board, setBoard] = useState(getNewBoard(player1));
   const classes = useStyles();
+  const [_routeMatch, params] = useRoute('/:roomId');
+  if (!params) return <></>;
+  const roomId = params.roomId;
+
+  useEffect(() => {
+    console.log(roomId);
+    const socket = new WebSocket(`ws://${process.env.REACT_APP_HEXAGON_API}`);
+    socket.addEventListener('open', function (event) {
+      console.log('websocket open');
+    });
+    socket.addEventListener('message', function (event) {
+      console.log(event.data);
+    });
+  }, [roomId]);
 
   return (
     <Layout>
       <Row gutter={[16, 16]}>
         <Col xs={24} md={6}>
-          <Card title={player1.name}>
+          <Card title={'Player 1'}>
+            {roomId}
             <Player player={player1} />
           </Card>
         </Col>
@@ -81,8 +93,15 @@ function GamePage(): JSX.Element {
           </Card>
         </Col>
         <Col xs={24} md={6}>
-          <Card title={player2.name}>
-            <Player player={player2} />
+          <Card title={'Player 2'}>
+            {player2 ? <Player player={player2} /> : <span>Waiting...</span>}
+          </Card>
+        </Col>
+      </Row>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} md={24}>
+          <Card title={'Share URL'}>
+            <ShareUrl />
           </Card>
         </Col>
       </Row>

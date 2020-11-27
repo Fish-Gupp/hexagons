@@ -1,7 +1,9 @@
 import React from 'react';
 import { Route, Switch } from 'wouter';
+import { Slide, ToastContainer } from 'react-toastify';
 import IndexPage from './pages/IndexPage';
 import GamePage from './pages/GamePage';
+
 import './App.css';
 
 function App(): JSX.Element {
@@ -9,8 +11,16 @@ function App(): JSX.Element {
     <div className="App">
       <Switch>
         <Route path={'/'} component={IndexPage} />
-        <Route path={'/:roomCode'} component={GamePage} />
+        <Route path={'/:roomId'} component={GamePage} />
       </Switch>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        transition={Slide}
+      />
     </div>
   );
 }
