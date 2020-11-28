@@ -3,15 +3,12 @@ import { createUseStyles } from 'react-jss';
 import { borderWidth, width } from '../../settings';
 import { PlayerType } from '../Player';
 
-export type NeighborIndex = 'n' | 'ne' | 'se' | 's' | 'sw' | 'nw';
+export type Cardinal = 'n' | 'ne' | 'se' | 's' | 'sw' | 'nw';
 
 export type HexagonType = {
   towerIndex: number;
   color: string;
   name: string;
-  neighbors: {
-    [k in NeighborIndex]?: HexagonType;
-  };
   player?: PlayerType;
   hexagonIndex: number;
   isOdd: number;

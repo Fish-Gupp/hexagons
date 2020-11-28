@@ -8,9 +8,10 @@ export type PlayerType = {
   name: string;
   color: string;
   editable: boolean;
-};
+} | null;
 
 const Player = ({ player }: { player: PlayerType }): JSX.Element => {
+  if (!player) return <span>Waiting...</span>;
   return (
     <div>
       <Input size="large" value={player.name} prefix={<UserOutlined />} />

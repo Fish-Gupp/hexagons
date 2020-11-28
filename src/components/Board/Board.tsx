@@ -5,8 +5,10 @@ import { PlayerType } from '../Player';
 import Tower, { TowerType } from './Tower';
 
 export type BoardType = {
+  player1: PlayerType;
+  player2: PlayerType;
   currentPlayer: PlayerType;
-  winner?: PlayerType;
+  winner: PlayerType;
   layout: TowerType[];
 };
 
