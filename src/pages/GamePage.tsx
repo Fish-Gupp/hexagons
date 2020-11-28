@@ -12,6 +12,17 @@ import ShareUrl from '../components/ShareUrl';
 import { v4 as uuid } from 'uuid';
 
 const useStyles = createUseStyles({
+  turnIndicator: {
+    backgroundColor: '#3bf43b',
+    border: '2px solid #47d25d',
+    borderRadius: '100%',
+    display: 'inline-block',
+    height: '1em',
+    left: '.5em',
+    position: 'relative',
+    top: '.2em',
+    width: '1em',
+  },
   winner: {
     backgroundColor: '#f7f9fbcc',
     left: 0,
@@ -63,73 +74,14 @@ function GamePage(): JSX.Element {
   }, [localPlayer]);
 
   useEffect(() => {
-    const connectionId = uuid();
-    let sessionId: string | null = null;
-    const pingTimeoutMs = 10000;
-    let lastPing = new Date().getTime();
-    const socket = new WebSocket(`${process.env.REACT_APP_HEXAGON_API}`);
-    socketRef.current = socket;
-    const close = () => {
-      clearInterval(intervalRef);
-      socket.close();
-    };
-    const intervalRef = setInterval(() => {
-      if (!socket.OPEN) {
-        close();
-      }
-      if (new Date().getTime() > lastPing + pingTimeoutMs) {
-        close();
-      }
-      send({ message: 'ping' });
-    }, 5000);
-    socket.addEventListener('open', () => {
-      console.log('websocket open');
-      send({ connectionId });
-    });
-    socket.addEventListener('message', (event) => {
-      lastPing = new Date().getTime();
-      try {
-        JSON.parse(event.data);
-      } catch {
-        return;
-      }
-      const data = JSON.parse(event.data);
-      if (data.to.groupId != roomId) return;
-      console.log('websocket data', data);
-
-      if (data.connectionId === connectionId) {
-        // initial sync message
-        sessionId = data.from;
-        if (data.from === data.groupAuthorities[0]) {
-          // is group owner
-          const player = loadLocalPlayerInfo(1);
-          setLocalPlayer(player);
-          updateBoard(getNewBoard(player));
-        } else {
-          // is not group owner
-          const player2 = loadLocalPlayerInfo(2);
-          setLocalPlayer(player2);
-          send({ player2 });
-        }
-      } else if (data.connectionId) {
-        console.warn(boardRef.current);
-        send({ board: boardRef.current });
-      }
-
-      if (!sessionId || data.from === sessionId) return;
-
-      if (data.board) {
-        setBoard(data.board);
-      }
-
-      if (data.player2 && data.from !== sessionId) {
-        if (!boardRef.current) return;
-        const newBoard: BoardType = {
-          ...boardRef.current,
-          player2: data.player2,
-        };
-        updateBoard(newBoard);
-      }
+    createWebsocketConnection({
+      boardRef,
+      roomId,
+      send,
+      setBoard,
+      setLocalPlayer,
+      socketRef,
+      updateBoard,
     });
   }, [roomId]);
 
@@ -141,11 +93,24 @@ function GamePage(): JSX.Element {
     );
   }
 
+  const activePlayerId = board.currentPlayer ? board.currentPlayer.id : 2;
+
   return (
     <Layout>
       <Row gutter={[16, 16]}>
         <Col xs={24} md={6}>
-          <Card title={'Player 1'}>
+          <Card
+            title={
+              <span>
+                Player 1
+                <span
+                  className={
+                    activePlayerId === 1 ? classes.turnIndicator : undefined
+                  }
+                ></span>
+              </span>
+            }
+          >
             <Player player={board.player1} />
           </Card>
         </Col>
@@ -188,7 +153,18 @@ function GamePage(): JSX.Element {
           </Card>
         </Col>
         <Col xs={24} md={6}>
-          <Card title={'Player 2'}>
+          <Card
+            title={
+              <span>
+                Player 2
+                <span
+                  className={
+                    activePlayerId === 2 ? classes.turnIndicator : undefined
+                  }
+                ></span>
+              </span>
+            }
+          >
             <Player player={board.player2} />
           </Card>
         </Col>
@@ -383,3 +359,93 @@ function loadLocalPlayerInfo(playerNumber: number): PlayerType {
     name: `Player ${playerNumber}`,
   };
 }
+
+const createWebsocketConnection = async ({
+  boardRef,
+  roomId,
+  send,
+  setBoard,
+  setLocalPlayer,
+  socketRef,
+  updateBoard,
+}: {
+  boardRef: React.MutableRefObject<BoardType | null>;
+  roomId: string;
+  send: (data: any) => void;
+  setBoard: React.Dispatch<React.SetStateAction<BoardType | null>>;
+  setLocalPlayer: React.Dispatch<React.SetStateAction<PlayerType | null>>;
+  socketRef: React.MutableRefObject<WebSocket | null>;
+  updateBoard: (board: BoardType) => void;
+}) => {
+  const connectionId = uuid();
+  let sessionId: string | null = null;
+  const pingTimeoutMs = 10000;
+  let lastPing = new Date().getTime();
+  await fetch(`${process.env.REACT_APP_HEXAGON_API?.replace('ws', 'http')}`, {
+    credentials: 'include',
+  });
+  const socket = new WebSocket(`${process.env.REACT_APP_HEXAGON_API}`);
+  socketRef.current = socket;
+  const close = () => {
+    clearInterval(intervalRef);
+    socket.close();
+  };
+  const intervalRef = setInterval(() => {
+    if (!socket.OPEN) {
+      close();
+    }
+    if (new Date().getTime() > lastPing + pingTimeoutMs) {
+      close();
+    }
+    send({ message: 'ping' });
+  }, 5000);
+  socket.addEventListener('open', () => {
+    console.log('websocket open');
+    send({ connectionId });
+  });
+  socket.addEventListener('message', (event) => {
+    lastPing = new Date().getTime();
+    try {
+      JSON.parse(event.data);
+    } catch {
+      return;
+    }
+    const data = JSON.parse(event.data);
+    if (data.to.groupId != roomId) return;
+    console.log('websocket data', data);
+
+    if (data.connectionId === connectionId) {
+      // initial sync message
+      sessionId = data.from;
+      if (data.from === data.groupAuthorities[0]) {
+        // is group owner
+        const player = loadLocalPlayerInfo(1);
+        setLocalPlayer(player);
+        updateBoard(getNewBoard(player));
+      } else {
+        // is not group owner
+        const player2 = loadLocalPlayerInfo(2);
+        setLocalPlayer(player2);
+        send({ player2 });
+      }
+    } else if (data.connectionId) {
+      console.warn(boardRef.current);
+      send({ board: boardRef.current });
+    }
+
+    if (!sessionId || data.from === sessionId) return;
+
+    if (data.board) {
+      setBoard(data.board);
+    }
+
+    if (data.player2 && data.from !== sessionId) {
+      if (!boardRef.current) return;
+      const newBoard: BoardType = {
+        ...boardRef.current,
+        player2: data.player2,
+      };
+      updateBoard(newBoard);
+    }
+  });
+};
