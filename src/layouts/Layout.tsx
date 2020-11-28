@@ -9,7 +9,9 @@ const useStyles = createUseStyles({
   },
 });
 
-function Layout(props: { children: any }): JSX.Element {
+function Layout(props: {
+  children: JSX.Element | JSX.Element[] | string | null | undefined;
+}): JSX.Element {
   const classes = useStyles();
 
   return (
