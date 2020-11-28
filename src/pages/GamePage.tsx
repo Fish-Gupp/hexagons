@@ -67,7 +67,7 @@ function GamePage(): JSX.Element {
     let sessionId: string | null = null;
     const pingTimeoutMs = 10000;
     let lastPing = new Date().getTime();
-    const socket = new WebSocket(`ws://${process.env.REACT_APP_HEXAGON_API}`);
+    const socket = new WebSocket(`${process.env.REACT_APP_HEXAGON_API}`);
     socketRef.current = socket;
     const close = () => {
       clearInterval(intervalRef);
