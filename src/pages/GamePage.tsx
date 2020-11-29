@@ -11,6 +11,7 @@ import checkForWinner from '../gameFunctions/checkForWinner';
 import dropHexagon from '../gameFunctions/dropHexagon';
 import getDropIndex from '../gameFunctions/getDropIndex';
 import saveLocalPlayerInfo from '../gameFunctions/saveLocalPlayerInfo';
+import debounce from 'lodash.debounce';
 
 const useStyles = createUseStyles({
   turnIndicator: {
@@ -75,6 +76,17 @@ function GamePage(): JSX.Element {
 
   useEffect(() => {
     saveLocalPlayerInfo(localPlayer);
+    const updateDebounced = debounce(() => {
+      if (!boardRef.current) return;
+      if (!localPlayer) return;
+      const newBoard = {
+        ...boardRef.current,
+        player1: localPlayer.id === 1 ? localPlayer : boardRef.current.player1,
+        player2: localPlayer.id === 2 ? localPlayer : boardRef.current.player2,
+      };
+      updateBoard(newBoard);
+    }, 500);
+    updateDebounced();
   }, [localPlayer]);
 
   useEffect(() => {
@@ -89,7 +101,7 @@ function GamePage(): JSX.Element {
     });
   }, [roomId]);
 
-  if (!board) {
+  if (!board || !localPlayer) {
     return (
       <Layout>
         <Spin />
@@ -115,7 +127,10 @@ function GamePage(): JSX.Element {
               </span>
             }
           >
-            <Player player={board.player1} />
+            <Player
+              player={localPlayer.id === 1 ? localPlayer : board.player1}
+              setLocalPlayer={localPlayer.id === 1 ? setLocalPlayer : null}
+            />
           </Card>
         </Col>
         <Col xs={24} md={12}>
@@ -169,7 +184,10 @@ function GamePage(): JSX.Element {
               </span>
             }
           >
-            <Player player={board.player2} />
+            <Player
+              player={localPlayer.id === 2 ? localPlayer : board.player2}
+              setLocalPlayer={localPlayer.id === 2 ? setLocalPlayer : null}
+            />
           </Card>
         </Col>
       </Row>

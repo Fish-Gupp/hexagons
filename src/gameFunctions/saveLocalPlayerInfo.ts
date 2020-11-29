@@ -1,13 +1,15 @@
 import { PlayerType } from '../components/Player';
 
 function saveLocalPlayerInfo(player: PlayerType): void {
-  const savePlayerData: { [id: string]: string | number | boolean } = {
+  if (!player) return;
+  const savePlayerData: { [id: string]: string | number | boolean | null } = {
     ...player,
   };
   if (savePlayerData.color === 'red' || savePlayerData.color === 'green') {
     savePlayerData.color = '';
   }
-  console.warn('saveLocalPlayerInfo', savePlayerData);
+  savePlayerData.editable = null;
+  console.warn('saveLocalPlayerInfo', savePlayerData, player);
   localStorage.setItem('hexagon-player', JSON.stringify(savePlayerData));
 }
 

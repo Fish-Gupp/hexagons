@@ -3,7 +3,7 @@ import { Cardinal, HexagonType } from '../components/Board/Hexagon';
 import { PlayerType } from '../components/Player';
 
 function checkForWinner(board: BoardType, hexagon: HexagonType): PlayerType {
-  if (!hexagon.player) return null;
+  if (!hexagon.playerNumber) return null;
 
   function nextagon(
     board: BoardType,
@@ -51,9 +51,8 @@ function checkForWinner(board: BoardType, hexagon: HexagonType): PlayerType {
     let testagon = nextagon(board, hexagon, d1);
     while (
       testagon &&
-      testagon.player &&
-      hexagon.player &&
-      testagon.player.id === hexagon.player.id
+      testagon.playerNumber &&
+      testagon.playerNumber === hexagon.playerNumber
     ) {
       count++;
       testagon = nextagon(board, testagon, d1);
@@ -78,9 +77,16 @@ function checkForWinner(board: BoardType, hexagon: HexagonType): PlayerType {
     return false;
   }
 
-  if (isFour(board, hexagon, 'n', 's')) return hexagon.player;
-  if (isFour(board, hexagon, 'ne', 'sw')) return hexagon.player;
-  if (isFour(board, hexagon, 'nw', 'se')) return hexagon.player;
+  const player =
+    hexagon.playerNumber === 1
+      ? board.player1
+      : hexagon.playerNumber === 2
+      ? board.player2
+      : null;
+
+  if (isFour(board, hexagon, 'n', 's')) return player;
+  if (isFour(board, hexagon, 'ne', 'sw')) return player;
+  if (isFour(board, hexagon, 'nw', 'se')) return player;
   return null;
 }
 

@@ -7,6 +7,9 @@ function dropHexagon(
   board: BoardType,
   towerIndex: number
 ): [BoardType, HexagonType | null] {
+  if (!board.currentPlayer) {
+    throw new Error('And you may ask yourself, "How did I get here?"');
+  }
   const dropIndex = getDropIndex(board, towerIndex);
   if (dropIndex >= height) {
     return [board, null];
@@ -19,7 +22,7 @@ function dropHexagon(
         : board.player1,
   };
   const hexagon = newBoard.layout[towerIndex][dropIndex];
-  hexagon.player = board.currentPlayer;
+  hexagon.playerNumber = board.currentPlayer.id;
   return [newBoard, hexagon];
 }
 

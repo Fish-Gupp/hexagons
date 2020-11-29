@@ -33,8 +33,6 @@ const ColorPicker = ({
   onChange: (color: string) => void;
 }): JSX.Element => {
   const [open, setOpen] = useState(false);
-  const [newColor, setNewColor] = useState(color);
-
   const previewRef = useRef<HTMLDivElement>(null);
 
   const screenOffset = () => {
@@ -63,9 +61,6 @@ const ColorPicker = ({
           onClick={() => {
             if (!editable) return;
             setOpen(!open);
-            if (color !== newColor) {
-              onChange(newColor);
-            }
           }}
           ref={previewRef}
           className={classes.preview}
@@ -73,9 +68,9 @@ const ColorPicker = ({
         {open && (
           <SketchPicker
             className={classes.popup}
-            color={newColor}
+            color={color}
             onChange={(e) => {
-              setNewColor(e.hex);
+              onChange(e.hex);
             }}
           />
         )}

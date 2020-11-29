@@ -10,16 +10,41 @@ export type PlayerType = {
   editable: boolean;
 } | null;
 
-const Player = ({ player }: { player: PlayerType }): JSX.Element => {
+const Player = ({
+  player,
+  setLocalPlayer,
+}: {
+  player: PlayerType;
+  setLocalPlayer: React.Dispatch<React.SetStateAction<PlayerType>> | null;
+}): JSX.Element => {
   if (!player) return <span>Waiting...</span>;
   return (
     <div>
-      <Input size="large" value={player.name} prefix={<UserOutlined />} />
+      <Input
+        size="large"
+        value={player.name}
+        onChange={(e) => {
+          if (!player.editable || !setLocalPlayer) return;
+          const newPlayer = {
+            ...player,
+            name: e.target.value,
+          };
+          console.warn('name change', newPlayer);
+          setLocalPlayer(newPlayer);
+        }}
+        prefix={<UserOutlined />}
+      />
       <ColorPicker
         color={player.color}
         editable={player.editable}
         onChange={(color) => {
-          console.log(color);
+          if (!player.editable || !setLocalPlayer) return;
+          const newPlayer = {
+            ...player,
+            color,
+          };
+          console.warn('color change', newPlayer);
+          setLocalPlayer(newPlayer);
         }}
       />
     </div>

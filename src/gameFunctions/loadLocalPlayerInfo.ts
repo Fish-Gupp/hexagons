@@ -7,7 +7,7 @@ function loadLocalPlayerInfo(playerNumber: number): PlayerType {
       const player: PlayerType = JSON.parse(playerString);
       if (player) {
         const loaded = {
-          color: player.color || playerNumber === 1 ? 'red' : 'green',
+          color: player.color || (playerNumber === 1 ? 'red' : 'green'),
           editable: true,
           id: playerNumber,
           name: player.name || `Player ${playerNumber}`,

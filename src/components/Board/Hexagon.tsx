@@ -1,7 +1,7 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { borderWidth, width } from '../../settings';
-import { PlayerType } from '../Player';
+import { BoardType } from './Board';
 
 export type Cardinal = 'n' | 'ne' | 'se' | 's' | 'sw' | 'nw';
 
@@ -9,7 +9,7 @@ export type HexagonType = {
   towerIndex: number;
   color: string;
   name: string;
-  player?: PlayerType;
+  playerNumber?: number;
   hexagonIndex: number;
   isOdd: number;
 };
@@ -52,9 +52,22 @@ const useStyles = createUseStyles({
   },
 });
 
-const Hexagon = ({ hexagon }: { hexagon: HexagonType }): JSX.Element => {
+const Hexagon = ({
+  hexagon,
+  board,
+}: {
+  hexagon: HexagonType;
+  board: BoardType;
+}): JSX.Element => {
+  const player =
+    hexagon.playerNumber === 1
+      ? board.player1
+      : hexagon.playerNumber === 2
+      ? board.player2
+      : null;
+
   const classes = useStyles({
-    color: (hexagon.player && hexagon.player.color) || hexagon.color,
+    color: player ? player.color : hexagon.color,
   });
 
   return (

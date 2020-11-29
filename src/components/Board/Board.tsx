@@ -59,6 +59,7 @@ const Board = ({
             key={index}
             index={index}
             tower={tower}
+            board={board}
           />
         ))}
       </div>

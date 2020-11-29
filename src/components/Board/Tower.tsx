@@ -2,6 +2,7 @@ import React from 'react';
 import Hexagon, { HexagonType } from './Hexagon';
 import { createUseStyles } from 'react-jss';
 import { borderWidth, width } from '../../settings';
+import { BoardType } from './Board';
 
 export type TowerType = HexagonType[];
 
@@ -21,12 +22,14 @@ const useStyles = createUseStyles({
 const Tower = ({
   tower,
   index,
+  board,
   onClick,
   onMouseEnter,
   onMouseLeave,
 }: {
   tower: TowerType;
   index: number;
+  board: BoardType;
   onClick: () => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -44,7 +47,7 @@ const Tower = ({
       }`}
     >
       {reverseTower.map((hexagon, index) => (
-        <Hexagon key={index} hexagon={hexagon} />
+        <Hexagon key={index} hexagon={hexagon} board={board} />
       ))}
     </div>
   );
@@ -55,7 +58,7 @@ export default Tower;
 export function getTowerHeight(tower: TowerType): number {
   for (let index = tower.length - 1; index >= 0; index--) {
     const hexagon = tower[index];
-    if (hexagon.player) {
+    if (hexagon.playerNumber) {
       return index + 1;
     }
   }
