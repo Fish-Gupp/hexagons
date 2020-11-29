@@ -6,7 +6,7 @@ import { height, width } from '../settings';
 function getNewBoard(player1: PlayerType): BoardType {
   console.warn('getNewBoard', player1);
   const board: BoardType = {
-    currentPlayer: player1,
+    currentPlayerId: 1,
     layout: [],
     player1,
     player2: null,

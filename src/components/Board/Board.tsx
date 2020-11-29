@@ -9,7 +9,7 @@ import Tower, { TowerType } from './Tower';
 export type BoardType = {
   player1: PlayerType;
   player2: PlayerType;
-  currentPlayer: PlayerType;
+  currentPlayerId: number;
   winner: PlayerType;
   layout: TowerType[];
 };
@@ -44,7 +44,9 @@ const Board = ({
   const [localBoard, updateLocalBoard] = useState(board);
   if (!board) return null;
   if (!localPlayer) return null;
-  const currentPlayer = board.currentPlayer;
+
+  const currentPlayer =
+    board.currentPlayerId == 1 ? board.player1 : board.player2;
 
   useEffect(() => {
     updateLocalBoard(board);

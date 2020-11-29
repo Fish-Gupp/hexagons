@@ -108,8 +108,6 @@ function GamePage(): JSX.Element {
     );
   }
 
-  const activePlayerId = board.currentPlayer ? board.currentPlayer.id : 2;
-
   return (
     <Layout>
       <Row gutter={[16, 16]}>
@@ -120,7 +118,9 @@ function GamePage(): JSX.Element {
                 Player 1
                 <span
                   className={
-                    activePlayerId === 1 ? classes.turnIndicator : undefined
+                    board.currentPlayerId === 1
+                      ? classes.turnIndicator
+                      : undefined
                   }
                 ></span>
               </span>
@@ -139,9 +139,8 @@ function GamePage(): JSX.Element {
               localPlayer={localPlayer}
               onClick={(index) => {
                 if (board.winner) return;
-                if (!board.currentPlayer) return;
                 if (!localPlayer) return;
-                if (board.currentPlayer.id !== localPlayer.id) return;
+                if (board.currentPlayerId !== localPlayer.id) return;
                 const [newBoard, newHexagon] = dropHexagon(board, index);
                 updateBoard(newBoard);
                 if (newHexagon) {
@@ -170,7 +169,9 @@ function GamePage(): JSX.Element {
                 Player 2
                 <span
                   className={
-                    activePlayerId === 2 ? classes.turnIndicator : undefined
+                    board.currentPlayerId === 2
+                      ? classes.turnIndicator
+                      : undefined
                   }
                 ></span>
               </span>
