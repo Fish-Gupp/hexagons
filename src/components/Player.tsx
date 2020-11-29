@@ -7,7 +7,6 @@ export type PlayerType = {
   id: number;
   name: string;
   color: string;
-  editable: boolean;
 } | null;
 
 const Player = ({
@@ -24,7 +23,7 @@ const Player = ({
         size="large"
         value={player.name}
         onChange={(e) => {
-          if (!player.editable || !setLocalPlayer) return;
+          if (!setLocalPlayer) return;
           const newPlayer = {
             ...player,
             name: e.target.value,
@@ -36,9 +35,9 @@ const Player = ({
       />
       <ColorPicker
         color={player.color}
-        editable={player.editable}
+        editable={!!setLocalPlayer}
         onChange={(color) => {
-          if (!player.editable || !setLocalPlayer) return;
+          if (!setLocalPlayer) return;
           const newPlayer = {
             ...player,
             color,

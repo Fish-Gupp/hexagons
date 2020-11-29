@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { createUseStyles } from 'react-jss';
 import getDropIndex from '../../gameFunctions/getDropIndex';
 import { width } from '../../settings';
@@ -44,6 +45,10 @@ const Board = ({
   if (!board) return null;
   if (!localPlayer) return null;
   const currentPlayer = board.currentPlayer;
+
+  useEffect(() => {
+    updateLocalBoard(board);
+  }, [board]);
 
   return (
     <div className={classes.background}>

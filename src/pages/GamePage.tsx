@@ -9,7 +9,6 @@ import ShareUrl from '../components/ShareUrl';
 import createWebsocketConnection from '../gameFunctions/createWebSocketConnection';
 import checkForWinner from '../gameFunctions/checkForWinner';
 import dropHexagon from '../gameFunctions/dropHexagon';
-import getDropIndex from '../gameFunctions/getDropIndex';
 import saveLocalPlayerInfo from '../gameFunctions/saveLocalPlayerInfo';
 import debounce from 'lodash.debounce';
 
