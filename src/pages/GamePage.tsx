@@ -137,14 +137,7 @@ function GamePage(): JSX.Element {
           <Card title={'Hexagon 4D'} bodyStyle={{ position: 'relative' }}>
             <Board
               board={board}
-              onMouseEnter={(towerIndex) => {
-                const tower = board.layout[towerIndex];
-                getDropIndex(board, towerIndex);
-              }}
-              onMouseLeave={(towerIndex) => {
-                const tower = board.layout[towerIndex];
-                getDropIndex(board, towerIndex);
-              }}
+              localPlayer={localPlayer}
               onClick={(index) => {
                 if (board.winner) return;
                 if (!board.currentPlayer) return;

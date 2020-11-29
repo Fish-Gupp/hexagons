@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { createUseStyles } from 'react-jss';
+import getDropIndex from '../../gameFunctions/getDropIndex';
 import { width } from '../../settings';
 import { PlayerType } from '../Player';
 import Tower, { TowerType } from './Tower';
@@ -31,27 +32,49 @@ const useStyles = createUseStyles({
 
 const Board = ({
   board,
+  localPlayer,
   onClick,
-  onMouseEnter,
-  onMouseLeave,
 }: {
   board: BoardType;
+  localPlayer: PlayerType;
   onClick?: (index: number) => void;
-  onMouseEnter?: (index: number) => void;
-  onMouseLeave?: (index: number) => void;
-}): JSX.Element => {
+}): JSX.Element | null => {
   const classes = useStyles();
+  const [localBoard, updateLocalBoard] = useState(board);
+  if (!board) return null;
+  if (!localPlayer) return null;
+  const currentPlayer = board.currentPlayer;
 
   return (
     <div className={classes.background}>
       <div className={classes.board}>
-        {board.layout.map((tower, index) => (
+        {localBoard.layout.map((tower, index) => (
           <Tower
             onMouseEnter={() => {
-              onMouseEnter && onMouseEnter(index);
+              if (!currentPlayer) return;
+              if (currentPlayer.id !== localPlayer.id) return;
+              const dropIndex = getDropIndex(localBoard, index);
+              const newLocalBoard = {
+                ...localBoard,
+              };
+              newLocalBoard.layout[index][dropIndex] = {
+                ...newLocalBoard.layout[index][dropIndex],
+                color: 'silver',
+              };
+              updateLocalBoard(newLocalBoard);
             }}
             onMouseLeave={() => {
-              onMouseLeave && onMouseLeave(index);
+              if (!currentPlayer) return;
+              if (currentPlayer.id !== localPlayer.id) return;
+              const dropIndex = getDropIndex(localBoard, index);
+              const newLocalBoard = {
+                ...localBoard,
+              };
+              newLocalBoard.layout[index][dropIndex] = {
+                ...newLocalBoard.layout[index][dropIndex],
+                color: 'white',
+              };
+              updateLocalBoard(newLocalBoard);
             }}
             onClick={() => {
               onClick && onClick(index);
@@ -59,7 +82,7 @@ const Board = ({
             key={index}
             index={index}
             tower={tower}
-            board={board}
+            board={localBoard}
           />
         ))}
       </div>
